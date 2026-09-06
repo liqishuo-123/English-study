@@ -1,0 +1,78 @@
+/* =========================================================
+   data/quiz-matching.js — 长篇阅读匹配（原创仿真题）
+   结构：passage 中每段以「[A]」「[B]」等标签开头，段与段之间空一行；
+        subQuestions 为 10 条陈述，answer 填对应段落字母。
+   ========================================================= */
+(function (global) {
+  'use strict';
+  var App = global.App = global.App || {};
+  App.QUIZ_BUILTIN = App.QUIZ_BUILTIN || [];
+
+  App.QUIZ_BUILTIN.push(
+    {
+      id: 'mt_1',
+      type: 'matching',
+      source: 'builtin',
+      year: '',
+      paper: '原创仿真 · 第 1 套',
+      title: 'The Future of Remote Work',
+      passage: '[A] When offices closed in 2020, millions of people discovered that a great deal of work could be done from home. Many assumed the change would be temporary. Five years later, remote and hybrid arrangements are a permanent feature of the labour market in most wealthy countries.\n\n[B] Employers were initially sceptical. The common worry was that unsupervised staff would work less. Large-scale studies have not supported this fear. On average, remote workers log slightly longer hours than their office-based colleagues, largely because time previously spent commuting is partly redirected into work.\n\n[C] Productivity, however, is not the same as hours. Tasks that require intense concentration tend to improve when people work from home, while tasks that depend on spontaneous conversation tend to suffer. Complicated negotiations, creative brainstorming and the mentoring of junior staff all fall into the second category.\n\n[D] This has led many organisations to adopt a hybrid model. Staff come in for two or three fixed days, chosen so that whole teams are present at the same time, and work remotely for the rest. The arrangement tries to capture the focus of home and the collaboration of the office.\n\n[E] The hybrid model has its own problems. Employees who come in on different days report difficulty scheduling meetings, and junior staff in particular say they receive less informal guidance. Several firms that tried fully flexible arrangements have since moved to fixed team days.\n\n[F] Geography is changing as well. When attendance is only required a few days a month, the acceptable commuting radius expands dramatically. Workers have moved to smaller cities and rural areas, taking their salaries with them and raising housing pressure in previously quiet towns.\n\n[G] For employees, the benefits are concrete. Surveys consistently rank schedule flexibility among the most valued job attributes, often above salary for workers with caring responsibilities. Parents, in particular, report substantially higher job satisfaction when they can avoid a daily commute.\n\n[H] The disadvantages are less evenly distributed. Workers in small flats, or those sharing space with several others, often lack a quiet place to concentrate. Newer employees miss the informal learning that happens by overhearing experienced colleagues, and report slower professional development.\n\n[I] Managers face a different challenge. Evaluating performance by observation — the traditional method — becomes impossible when staff are not in the building. Companies have had to shift towards assessing output, which requires clearer goals and more explicit measures of success.\n\n[J] There are broader economic effects. City-centre cafés, dry cleaners and lunch shops that depended on office workers have seen revenue fall sharply, while suburban businesses have gained. Several large cities are now considering converting empty office towers into housing.\n\n[K] Looking ahead, most analysts expect the share of fully remote roles to stabilise rather than grow further. The likely outcome is not the death of the office but its redefinition: a place people go to collaborate rather than a place they go to be seen.',
+      subQuestions: [
+        { stem: '1. Working from home tends to improve tasks that need deep concentration but harms those relying on unplanned conversation.', answer: 'C', explanation: 'C 段指出需要高度专注的任务在家中表现更好，而依赖 spontaneous conversation 的任务会受影响，题干为该句的概括。' },
+        { stem: '2. Employees generally work somewhat longer hours at home than in the office.', answer: 'B', explanation: 'B 段明确 remote workers log slightly longer hours，原因是通勤时间被部分转为工作时间。' },
+        { stem: '3. Many companies now ask staff to be in the office on the same fixed days.', answer: 'D', explanation: 'D 段讲 hybrid model，员工在固定的两三天到岗，且要求整个团队同时在场。' },
+        { stem: '4. Junior staff who are not in the office learn more slowly from experienced colleagues.', answer: 'H', explanation: 'H 段提到新人错过 overhearing experienced colleagues 带来的非正式学习，职业发展更慢。' },
+        { stem: '5. Managers must judge performance by results rather than by watching people work.', answer: 'I', explanation: 'I 段指出传统「靠观察评估」的方式失效，公司转向 assessing output。' },
+        { stem: '6. Reduced demand for city-centre offices has prompted discussion of turning them into homes.', answer: 'J', explanation: 'J 段末尾提到多个大城市正考虑把空置写字楼改造成住宅。' },
+        { stem: '7. Workers with family caring duties especially value flexible schedules.', answer: 'G', explanation: 'G 段指出弹性排班在最受重视的工作属性中排名很高，对负有照护责任的员工甚至高于薪资。' },
+        { stem: '8. Some companies that allowed complete flexibility have returned to set team days.', answer: 'E', explanation: 'E 段末尾 Several firms that tried fully flexible arrangements have since moved to fixed team days。' },
+        { stem: '9. Fewer required office days have widened the distance people are willing to live from work.', answer: 'F', explanation: 'F 段讲每月只需到岗几天时，可接受的通勤半径大幅扩大，人们迁往小城市和乡村。' },
+        { stem: '10. Experts predict the proportion of fully remote jobs will level off instead of continuing to rise.', answer: 'K', explanation: 'K 段开头 most analysts expect the share of fully remote roles to stabilise rather than grow further。' }
+      ]
+    },
+
+    {
+      id: 'mt_2',
+      type: 'matching',
+      source: 'builtin',
+      year: '',
+      paper: '原创仿真 · 第 2 套',
+      title: 'How Food Waste Happens',
+      passage: '[A] Roughly a third of the food produced for human consumption is never eaten. The figure is remarkably consistent across rich and poor countries, but the reasons behind it differ enormously.\n\n[B] In low-income countries, most loss occurs before food reaches the shop. Poor roads, unreliable refrigeration and inadequate storage mean that crops spoil between the field and the market. Investment in cold chains and better packaging produces large reductions in these losses.\n\n[C] In wealthy countries the pattern is reversed. The overwhelming majority of waste happens in the home. Households buy more than they need, misinterpret date labels, and throw away perfectly edible food because it has passed its "best before" date.\n\n[D] Confusion over labelling is a major contributor. "Use by" refers to safety and should be respected strictly. "Best before" refers to quality, and most foods remain perfectly safe long after that date. Surveys suggest that a large share of consumers do not know the difference.\n\n[E] Shop design plays a role too. Supermarkets encourage larger purchases through multi-buy promotions, and place tempting items at eye level. Shoppers who arrive without a list consistently buy more than they intended and discard more later.\n\n[F] Restaurants and canteens add another layer. Large portions lead to plate waste, while fixed menus make it hard to adjust to actual demand. Kitchens that measure what is thrown away and adjust portion sizes typically cut waste substantially within a few months.\n\n[G] Some businesses have turned the problem into an opportunity. Apps that sell surplus food at a discount near closing time now operate in dozens of cities, connecting shops with customers who are happy to buy at reduced prices.\n\n[H] Redistribution to charities is another route, though it is less straightforward than it appears. Transport, storage and food safety rules all impose costs, and many organisations lack the capacity to handle perishable goods at short notice.\n\n[I] Households that track their own waste tend to reduce it quickly. Simply keeping a record of what is thrown away, and why, makes the pattern visible and changes shopping habits within weeks.\n\n[J] Policymakers have begun to act. Several countries now require large supermarkets to report the volume of food they discard, and a few have set national reduction targets with deadlines.\n\n[K] The environmental case is straightforward. Wasted food accounts for a significant share of global greenhouse gas emissions, and the water and land used to produce it are wasted as well. Reducing waste is therefore one of the cheapest available climate measures.',
+      subQuestions: [
+        { stem: '1. Consumers often discard safe food because they misunderstand quality dates.', answer: 'C', explanation: 'C 段指出富裕国家浪费主要发生在家庭，人们因误读 best before 标签而丢弃完全可食用的食物。' },
+        { stem: '2. Explaining the distinction between two common date labels could reduce a great deal of waste.', answer: 'D', explanation: 'D 段区分 Use by（安全）与 Best before（品质），并指出大量消费者不知道两者差别。' },
+        { stem: '3. In poorer nations the biggest losses occur during transport and storage.', answer: 'B', explanation: 'B 段说明低收入国家的损耗主要发生在到达商店之前，原因是道路差、冷藏不可靠和储存不足。' },
+        { stem: '4. Monitoring how much is thrown away helps both households and professional kitchens cut waste.', answer: 'I', explanation: 'I 段讲家庭记录丢弃内容后浪费迅速下降；F 段讲餐厅厨房测量丢弃量后也能大幅减少。两处共同点即「监测」，其中 I 段直接针对家庭记录这一做法。' },
+        { stem: '5. Surplus food is increasingly sold cheaply through digital platforms.', answer: 'G', explanation: 'G 段讲 Apps 在关店前以折扣价出售余量食物，已在数十个城市运营。' },
+        { stem: '6. Marketing techniques in stores lead shoppers to buy more than they plan.', answer: 'E', explanation: 'E 段讲多件优惠促销和视线高度陈列诱导顾客超额购买，随后丢弃更多。' },
+        { stem: '7. Cutting food waste is a low-cost way to reduce greenhouse gas emissions.', answer: 'K', explanation: 'K 段末句 Reducing waste is therefore one of the cheapest available climate measures。' },
+        { stem: '8. Giving surplus food to charity involves practical difficulties beyond goodwill.', answer: 'H', explanation: 'H 段指出运输、储存和食品安全规则都带来成本，许多机构缺乏处理易腐食品的能力。' },
+        { stem: '9. Some governments now oblige big retailers to disclose how much food they throw away.', answer: 'J', explanation: 'J 段 several countries now require large supermarkets to report the volume of food they discard。' },
+        { stem: '10. Offering oversized servings contributes to waste in the catering sector.', answer: 'F', explanation: 'F 段 Large portions lead to plate waste，并提到调整份量可在数月内大幅减少浪费。' }
+      ]
+    },
+
+    {
+      id: 'mt_3',
+      type: 'matching',
+      source: 'builtin',
+      year: '',
+      paper: '原创仿真 · 第 3 套',
+      title: 'The Attention Economy',
+      passage: '[A] In an economy where information is abundant, attention becomes the scarce resource. Companies that once competed for shelf space now compete for minutes of human focus, and they have become extremely good at it.\n\n[B] The techniques are well documented. Infinite scrolling removes the natural stopping point that the end of a page used to provide. Variable rewards — sometimes a message is interesting, sometimes it is not — produce the same psychological pattern that makes slot machines compelling.\n\n[C] Notification design exploits a specific weakness in human cognition. An unresolved interruption is mentally expensive: the brain keeps part of its capacity allocated to the unfinished item. This is why a single unread badge can occupy thought far out of proportion to its importance.\n\n[D] The consequences for reading are measurable. Studies of reading behaviour on screens show a pattern often described as F-shaped: readers scan the top of the page, move down the left edge, and rarely reach the bottom right. Long-form reading has declined in every age group studied.\n\n[E] Whether this represents a real loss is debated. Some researchers argue that scanning is an efficient adaptation to information overload, and that humans have always skimmed before deciding what deserves attention.\n\n[F] Others point to evidence that deep reading and scanning activate different cognitive processes. Sustained reading builds the ability to follow extended arguments and to hold a writer\'s position in mind while evaluating it — a skill that scanning does not appear to develop.\n\n[G] Schools have responded in varied ways. Some have banned phones outright; others now teach digital literacy explicitly, showing students how recommendation systems work and asking them to reflect on their own usage.\n\n[H] Individual countermeasures exist as well. Turning off all non-essential notifications, keeping the phone in another room during study, and using website blockers during work hours are simple interventions that many people report to be effective.\n\n[I] A more structural response has emerged in regulation. Several jurisdictions now require platforms to make it easy to disable autoplay and infinite scroll, and to offer an option to see content in chronological rather than algorithmic order.\n\n[J] Technology designers themselves have begun to reconsider. A small but growing number of applications are built around the idea of "calm technology": they notify users only for genuinely important events, and they provide clear signs of how much time has been spent.\n\n[K] Whether these responses will be sufficient remains unclear. The economic incentive to capture attention is enormous and unlikely to disappear. What is clear is that attention, unlike information, cannot be produced in unlimited quantities.',
+      subQuestions: [
+        { stem: '1. Not knowing what a message contains makes it more compelling than a predictable one.', answer: 'B', explanation: 'B 段讲 variable rewards（有时有趣有时无趣）产生的心理模式与老虎机相同，即不确定性带来吸引力。' },
+        { stem: '2. An unread message marker occupies mental capacity because the brain keeps the task open.', answer: 'C', explanation: 'C 段讲未解决的打断在心理上代价高昂，大脑会持续为未完成事项分配资源。' },
+        { stem: '3. Removing the natural end of a page encourages people to continue consuming.', answer: 'B', explanation: 'B 段 Infinite scrolling removes the natural stopping point that the end of a page used to provide。' },
+        { stem: '4. Some argue that skimming is a sensible response to having too much information.', answer: 'E', explanation: 'E 段 Some researchers argue that scanning is an efficient adaptation to information overload。' },
+        { stem: '5. Reading at length develops skills that quick scanning does not.', answer: 'F', explanation: 'F 段指出持续阅读培养跟随长篇论证、在评价时记住作者立场的能力，而 scanning 似乎不培养这种能力。' },
+        { stem: '6. Some education systems now teach students how recommendation algorithms function.', answer: 'G', explanation: 'G 段提到部分学校开设 digital literacy 课程，讲解推荐系统的运作并让学生反思自己的使用行为。' },
+        { stem: '7. Laws in some places require platforms to allow users to turn off autoplay.', answer: 'I', explanation: 'I 段 Several jurisdictions now require platforms to make it easy to disable autoplay and infinite scroll。' },
+        { stem: '8. On-screen reading tends to follow a pattern in which the lower-right part is seldom reached.', answer: 'D', explanation: 'D 段描述 F 型阅读模式，读者很少读到右下角。' },
+        { stem: '9. A growing minority of apps are designed to interrupt users only for genuinely important matters.', answer: 'J', explanation: 'J 段讲 calm technology 理念，只在真正重要的事件时通知用户。' },
+        { stem: '10. Personal measures such as disabling alerts and relocating the phone are reported to work.', answer: 'H', explanation: 'H 段列举关闭非必要通知、学习时把手机放到另一个房间等措施，许多人反馈有效。' }
+      ]
+    }
+  );
+})(window);

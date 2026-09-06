@@ -1,0 +1,33 @@
+{
+  "type": "reading",
+  "source": "custom",
+  "year": "2024-06",
+  "paper": "第1套",
+  "passage": "请在此处粘贴阅读文章原文。建议控制在一屏以内，方便手机阅读。",
+  "subQuestions": [
+    {
+      "id": "custom_reading_0",
+      "stem": "According to the passage, what is the main idea?",
+      "options": [
+        "A. The importance of technology in education.",
+        "B. The role of sports in modern society.",
+        "C. The challenges faced by young readers.",
+        "D. The benefits of learning a second language."
+      ],
+      "answer": "A",
+      "explanation": "文章首段点明主题，后文围绕技术在教育中的作用展开，因此选 A。"
+    },
+    {
+      "id": "custom_reading_1",
+      "stem": "Why does the author mention online courses?",
+      "options": [
+        "A. To criticize their low quality.",
+        "B. To show how technology changes learning.",
+        "C. To compare them with traditional classes.",
+        "D. To argue that they should be banned."
+      ],
+      "answer": "B",
+      "explanation": "作者以在线课程为例，说明技术正在改变学习方式。"
+    }
+  ]
+}
