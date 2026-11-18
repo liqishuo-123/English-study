@@ -213,7 +213,7 @@
       modCell('pen', '写作', '#/writing', 0),
       modCell('read', '阅读', '#/quiz', 0),
       modCell('headset', '听力', '#/listen', 0),
-      modCell('sparkle', 'AI 助教', '#/agent', 0)
+      modCell('compass', '学习教练', '#/coach', 0)
     ]);
 
     /* ---------- 打卡按钮 ---------- */

@@ -275,6 +275,19 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 .tab-item.has-dot .tab-dot { transform: translateX(2px) scale(1); }
 
+/* --- AI 助教（一级 Tab，常驻品牌色，让入口一眼看见） --- */
+.tab-item.is-accent { color: var(--brand-2); }
+.tab-item.is-accent .icon { stroke-width: 2; }
+.tab-item.is-accent.is-active { color: var(--brand-1); }
+.tab-item.is-accent.is-active .icon { filter: drop-shadow(0 3px 7px rgba(99,91,255,.35)); }
+.tab-item.is-accent .tab-label { font-weight: 700; }
+
+/* 窄屏（≤360px）收紧，保证 6 个 Tab 不挤 */
+@media (max-width: 360px) {
+  .tab-item .icon { width: 22px; height: 22px; }
+  .tab-item .tab-label { font-size: 10px; letter-spacing: 0; }
+}
+
 @media (hover: hover) {
   .tab-item:hover { color: var(--brand-2); }
 }

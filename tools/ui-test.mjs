@@ -211,6 +211,86 @@ try {
   check('今日任务含听力行', today && today.tasks >= 4, 'tasks=' + (today && today.tasks));
   check('页面无横向溢出', today && today.hOverflow === false, 'overflow=' + (today && today.hOverflow));
 
+  /* ---------- 4.5 底部导航：AI 助教在最左 ---------- */
+  await evalJs(`location.hash = '#/today'; true`);
+  await sleep(600);
+  const nav = await evalJs(`(function(){
+    var items = [].slice.call(document.querySelectorAll('#tabbar .tab-item'));
+    var bar = document.getElementById('tabbar');
+    return {
+      count: items.length,
+      keys: items.map(function(n){ return n.dataset.key; }),
+      labels: items.map(function(n){ return (n.querySelector('.tab-label')||{}).textContent; }),
+      widths: items.map(function(n){ return Math.round(n.getBoundingClientRect().width); }),
+      clipped: items.filter(function(n){
+        var l = n.querySelector('.tab-label');
+        return l && l.scrollWidth > l.clientWidth + 1;
+      }).length,
+      overflow: bar ? bar.scrollWidth > bar.clientWidth + 1 : true,
+      accent: items.filter(function(n){ return n.classList.contains('is-accent'); }).length,
+      accentColor: (function(){
+        var a = items.filter(function(n){ return n.classList.contains('is-accent'); })[0];
+        return a ? getComputedStyle(a).color : '';
+      })(),
+      plainColor: (function(){
+        var p = items.filter(function(n){ return !n.classList.contains('is-accent') && !n.classList.contains('is-active'); })[0];
+        return p ? getComputedStyle(p).color : '';
+      })()
+    };
+  })()`);
+  check('底部导航共 6 个 Tab', nav && nav.count === 6, JSON.stringify(nav && nav.keys));
+  check('最左边是 AI 助教', nav && nav.keys[0] === 'agent', nav && nav.labels.join('/'));
+  check('Tab 文字没有被裁切', nav && nav.clipped === 0, 'clipped=' + (nav && nav.clipped));
+  check('导航条无横向溢出', nav && nav.overflow === false);
+  check('每个 Tab 宽度足够', nav && nav.widths.every(function(w){ return w >= 52; }), nav && nav.widths.join(','));
+  check('AI 助教常驻强调色', nav && nav.accent === 1 && nav.accentColor !== nav.plainColor,
+    nav && nav.accentColor + ' vs ' + nav.plainColor);
+
+  // 320px 小屏（iPhone SE / 老机型）：6 个 Tab 仍然不裁切
+  await send('Emulation.setDeviceMetricsOverride', { width: 320, height: 640, deviceScaleFactor: 2, mobile: true });
+  await sleep(500);
+  const nav320 = await evalJs(`(function(){
+    var items = [].slice.call(document.querySelectorAll('#tabbar .tab-item'));
+    var bar = document.getElementById('tabbar');
+    return {
+      clipped: items.filter(function(n){
+        var l = n.querySelector('.tab-label');
+        return l && l.scrollWidth > l.clientWidth + 1;
+      }).length,
+      overflow: bar ? bar.scrollWidth > bar.clientWidth + 1 : true,
+      minW: Math.min.apply(null, items.map(function(n){ return Math.round(n.getBoundingClientRect().width); })),
+      iconH: Math.round(items[0].getBoundingClientRect().height)
+    };
+  })()`);
+  check('320px 下 Tab 文字不裁切', nav320 && nav320.clipped === 0, JSON.stringify(nav320));
+  check('320px 下导航条不溢出', nav320 && nav320.overflow === false);
+  check('320px 下 Tab 仍可点（高度 ≥44）', nav320 && nav320.iconH >= 44, 'h=' + (nav320 && nav320.iconH) + ' w=' + (nav320 && nav320.minW));
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+  await sleep(400);
+
+  // 点最左边 → 进助教页；助教页时该 Tab 高亮
+  await evalJs(`document.querySelector('#tabbar .tab-item[data-key="agent"]').click(); true`);
+  await sleep(700);
+  const agentTab = await evalJs(`(function(){
+    var on = document.querySelector('#tabbar .tab-item.is-active');
+    return { hash: location.hash, active: on ? on.dataset.key : '' , hasView: !!document.querySelector('#view .ag-composer') };
+  })()`);
+  check('点最左 Tab 进入 AI 助教页', agentTab && agentTab.hash === '#/agent' && agentTab.hasView, JSON.stringify(agentTab));
+  check('助教页对应 Tab 高亮', agentTab && agentTab.active === 'agent');
+
+  // 教练页（二级）高亮归到「今日」
+  await evalJs(`location.hash = '#/coach'; true`);
+  await sleep(700);
+  const coachTab = await evalJs(`(function(){
+    var on = document.querySelector('#tabbar .tab-item.is-active');
+    var back = document.querySelector('#view .page-head .icon-btn');
+    return { active: on ? on.dataset.key : '', back: !!back };
+  })()`);
+  check('学习教练页高亮「今日」', coachTab && coachTab.active === 'today', JSON.stringify(coachTab));
+  check('学习教练页有返回键', coachTab && coachTab.back === true);
+  await evalJs(`location.hash = '#/today'; true`);
+  await sleep(500);
+
   /* ---------- 5. 宽屏布局 ---------- */
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
   await evalJs(`location.hash = '#/today'; true`);

@@ -15,11 +15,12 @@
   var U = App.Utils;
 
   var tabs = [
-    { key: 'today',   title: '今日', route: '#/today',   icon: 'home',    order: 1, visible: true },
-    { key: 'words',   title: '单词', route: '#/words',   icon: 'cards',   order: 2, visible: true },
-    { key: 'writing', title: '写作', route: '#/writing', icon: 'pen',     order: 3, visible: true },
-    { key: 'quiz',    title: '阅读', route: '#/quiz',    icon: 'read',    order: 4, visible: true },
-    { key: 'me',      title: '我的', route: '#/me',      icon: 'user',    order: 5, visible: true }
+    { key: 'agent',   title: 'AI 助教', route: '#/agent',  icon: 'sparkle', order: 1, visible: true, accent: true },
+    { key: 'today',   title: '今日', route: '#/today',   icon: 'home',    order: 2, visible: true },
+    { key: 'words',   title: '单词', route: '#/words',   icon: 'cards',   order: 3, visible: true },
+    { key: 'writing', title: '写作', route: '#/writing', icon: 'pen',     order: 4, visible: true },
+    { key: 'quiz',    title: '阅读', route: '#/quiz',    icon: 'read',    order: 5, visible: true },
+    { key: 'me',      title: '我的', route: '#/me',      icon: 'user',    order: 6, visible: true }
   ];
 
   // 二级路由（不出现在底部 Tab，由页面内入口进入）
@@ -39,8 +40,8 @@
   function isActive(tab, route) {
     route = route || currentRoute;
     if (route === tab.route) return true;
-    // 错题本为二级页，从「今日」进入，归属高亮到「今日」
-    if (tab.key === 'today' && route === '#/wrongbook') return true;
+    // 错题本、学习教练为二级页，从「今日」进入，归属高亮到「今日」
+    if (tab.key === 'today' && (route === '#/wrongbook' || route === '#/coach')) return true;
     return false;
   }
 
@@ -51,7 +52,7 @@
     var frag = document.createDocumentFragment();
 
     list.forEach(function (tab) {
-      var btn = U.el('button.tab-item', {
+      var btn = U.el('button.tab-item' + (tab.accent ? '.is-accent' : ''), {
         type: 'button',
         dataset: { key: tab.key, route: tab.route },
         'aria-label': tab.title,

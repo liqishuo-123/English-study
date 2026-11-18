@@ -495,6 +495,10 @@
     /* ---------- 顶部 ---------- */
     function pageHead() {
       return U.el('div.page-head', null, [
+        U.el('button.icon-btn', {
+          type: 'button', 'aria-label': '返回今日',
+          onclick: function () { App.Router.go('#/today'); }
+        }, [U.icon('back')]),
         U.el('div', null, [
           U.el('h1.page-title', { text: '学习教练' }),
           U.el('div.ag-sub', { text: '按你的真实数据定计划 · 定期揪出退步和易错词' })
