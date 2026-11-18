@@ -146,9 +146,29 @@ cet-workbench/
 │   ├── views/              # 8 个页面视图
 │   └── app.js              # 启动器：注册视图、主题、SW
 ├── icons/                  # PWA 图标与 favicon
-├── tools/                  # 图标生成、探针、场景测试、UI 回归
+├── tools/                  # 图标生成、探针、场景测试、UI 回归、海报渲染
 └── docs/                   # 方案说明、部署指南、导入说明与模板
 ```
+
+## 宣传海报
+
+`docs/poster/` 里有一张做好的 A3 海报，**297 × 420 mm / 3508 × 4961 px / 300 DPI**，可直接送印：
+
+| 文件 | 用途 |
+| --- | --- |
+| [`poster-a3-300dpi.png`](docs/poster/poster-a3-300dpi.png) | 位图成品（已写入 300dpi，含可扫码二维码） |
+| [`poster-a3.pdf`](docs/poster/poster-a3.pdf) | 印刷版 PDF |
+| [`海报提示词.md`](docs/poster/海报提示词.md) | 版式规范 + 中文/英文文生图提示词（想用 AI 重画时直接抄） |
+| [`src/poster.html`](docs/poster/src/poster.html) | 海报源码（HTML/CSS），改文案后一键重出 |
+
+改完文案重新渲染：
+
+```bash
+node tools/shot-hires.mjs http://127.0.0.1:8123/ ../_poster/shots   # 3 倍像素密度演示截图
+node tools/poster-shot.mjs ../_poster/poster.html ../_poster/poster-a3-300dpi.png
+```
+
+`poster-shot.mjs` 会顺带做几何自检（区块重叠、文字溢出、页脚被裁、图片是否加载），有问题直接报出来。
 
 ## 自测
 

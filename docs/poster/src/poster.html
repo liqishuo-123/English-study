@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>四六级英语工作台 · A3 海报</title>
+<style>
+  /* A3 竖版 @300dpi = 3508 × 4961 px，全部尺寸按 CSS px 直接写死 */
+  @page { size: 297mm 420mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 3508px; height: 4961px; overflow: hidden;
+    background: #06080f;
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num { font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+  .poster {
+    position: relative; width: 3508px; height: 4961px;
+    padding: 150px 168px 132px;
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(1100px 900px at 8% -4%, rgba(99,102,241,.42) 0%, transparent 62%),
+      radial-gradient(1000px 820px at 96% 4%, rgba(139,92,246,.34) 0%, transparent 60%),
+      radial-gradient(1400px 1100px at 50% 108%, rgba(67,56,202,.30) 0%, transparent 66%),
+      linear-gradient(180deg, #070a14 0%, #0a0e1e 42%, #06080f 100%);
+  }
+  /* 细网格 + 顶部光带 */
+  .poster::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 88px 88px, 88px 88px;
+    mask-image: radial-gradient(1200px 1400px at 50% 12%, #000 20%, transparent 78%);
+  }
+  .glow-line {
+    position: absolute; left: 168px; right: 168px; top: 0; height: 10px;
+    background: linear-gradient(90deg, transparent, #8b8cff, #c4b5fd, #8b8cff, transparent);
+    opacity: .85;
+  }
+
+  /* ---------- 页眉 ---------- */
+  .head { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+  .brand { display: flex; align-items: center; gap: 30px; }
+  .mark {
+    width: 116px; height: 116px; border-radius: 32px;
+    background: linear-gradient(140deg, #7c7dff 0%, #4f46e5 52%, #3730a3 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 24px 60px rgba(79,70,229,.55), inset 0 1px 0 rgba(255,255,255,.45);
+  }
+  .mark b { font-size: 40px; font-weight: 800; letter-spacing: .04em; line-height: 1; }
+  .mark i { font-size: 22px; font-style: normal; opacity: .8; letter-spacing: .16em; margin-top: 8px; }
+  .brand-txt .name { font-size: 54px; font-weight: 800; letter-spacing: .01em; }
+  .brand-txt .sub { font-size: 27px; color: #9aa3c7; margin-top: 12px; letter-spacing: .06em; }
+  .head-tags { display: flex; gap: 20px; }
+  .tag {
+    font-size: 30px; padding: 20px 34px; border-radius: 999px;
+    border: 2px solid rgba(255,255,255,.18); color: #d6dcf5;
+    background: rgba(255,255,255,.06); letter-spacing: .03em;
+  }
+  .tag.hot { border-color: rgba(139,140,255,.55); background: rgba(99,102,241,.20); color: #cdd0ff; }
+
+  /* ---------- 主标题 ---------- */
+  .hero { position: relative; z-index: 2; margin-top: 74px; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 20px;
+    font-size: 34px; letter-spacing: .22em; color: #a5adf5; font-weight: 700;
+  }
+  .kicker .dot { width: 16px; height: 16px; border-radius: 50%; background: #8b8cff; box-shadow: 0 0 26px #8b8cff; }
+  h1 {
+    margin-top: 40px; font-size: 268px; line-height: 1.03; font-weight: 900;
+    letter-spacing: -.035em;
+    background: linear-gradient(102deg, #ffffff 12%, #e6e5ff 44%, #b9b7ff 78%, #8f8cf5 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h1 em { font-style: normal; color: transparent;
+    background: linear-gradient(100deg, #a5b4fc, #8b8cff 40%, #c4b5fd 100%);
+    -webkit-background-clip: text; background-clip: text; }
+  .lede {
+    margin-top: 46px; font-size: 52px; line-height: 1.52; color: #b9c1e2;
+    max-width: 2500px; letter-spacing: .01em;
+  }
+  .lede b { color: #fff; font-weight: 700; }
+  .lede s { text-decoration: none; color: #9ba2ff; font-weight: 700; }
+
+  /* ---------- 手机三连 ---------- */
+  .phones {
+    position: relative; z-index: 2; margin-top: 96px;
+    display: flex; align-items: flex-end; justify-content: center; gap: 0;
+  }
+  .phone-wrap { position: relative; }
+  .phone-wrap.left  { transform: rotate(-7.5deg) translateY(30px); margin-right: -86px; z-index: 1; }
+  .phone-wrap.mid   { transform: translateY(-46px); z-index: 3; }
+  .phone-wrap.right { transform: rotate(7.5deg) translateY(30px); margin-left: -86px; z-index: 1; }
+  .phone {
+    width: 726px; padding: 15px; border-radius: 82px;
+    background: linear-gradient(160deg, #2b3050 0%, #12162a 42%, #262b48 100%);
+    box-shadow: 0 70px 150px rgba(0,0,0,.62), 0 0 0 2px rgba(255,255,255,.10);
+  }
+  .phone .screen { border-radius: 68px; overflow: hidden; display: block; width: 100%; background: #0b0e18; }
+  .phone .screen img { display: block; width: 100%; height: auto; }
+  .caps { position: relative; z-index: 2; margin-top: 120px;
+    display: flex; align-items: center; justify-content: center; gap: 40px; }
+  .cap {
+    font-size: 34px; color: #aab2d6; letter-spacing: .04em; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 16px;
+    padding: 18px 34px; border-radius: 999px;
+    border: 2px solid rgba(255,255,255,.12); background: rgba(255,255,255,.055);
+  }
+  .cap b { color: #fff; font-weight: 700; }
+  .cap .pin { width: 14px; height: 14px; border-radius: 50%; background: #8b8cff; box-shadow: 0 0 20px #8b8cff; }
+
+  /* ---------- 功能卡 ---------- */
+  .feats { position: relative; z-index: 2; margin-top: 190px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 44px; }
+  .feat {
+    display: flex; gap: 34px; align-items: flex-start;
+    padding: 44px 46px; border-radius: 40px;
+    background: linear-gradient(165deg, rgba(255,255,255,.085), rgba(255,255,255,.028));
+    border: 2px solid rgba(255,255,255,.10);
+    box-shadow: 0 26px 60px rgba(0,0,0,.28);
+  }
+  .feat-ico {
+    flex: 0 0 96px; width: 96px; height: 96px; border-radius: 28px;
+    background: linear-gradient(150deg, rgba(139,140,255,.34), rgba(99,102,241,.14));
+    border: 2px solid rgba(139,140,255,.38);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 46px; font-weight: 800; color: #c7c9ff;
+  }
+  .feat-t { font-size: 46px; font-weight: 800; letter-spacing: .01em; }
+  .feat-d { margin-top: 16px; font-size: 33px; line-height: 1.48; color: #a9b1d2; }
+  .feat-d u { text-decoration: none; color: #cfd3ff; border-bottom: 2px solid rgba(139,140,255,.5); }
+
+  /* ---------- 数字带 ---------- */
+  .stats {
+    position: relative; z-index: 2; margin-top: auto; padding-top: 74px;
+    display: flex; align-items: stretch; justify-content: space-between;
+    border-top: 2px solid rgba(255,255,255,.10);
+  }
+  .stat { text-align: center; flex: 1; }
+  .stat .v { font-size: 92px; font-weight: 900; line-height: 1;
+    background: linear-gradient(180deg, #ffffff, #a9a6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .k { margin-top: 18px; font-size: 30px; color: #8f97ba; letter-spacing: .1em; }
+
+  /* ---------- 页脚 ---------- */
+  .foot {
+    position: relative; z-index: 2; margin-top: 66px;
+    display: flex; align-items: center; gap: 66px;
+    padding: 58px 64px; border-radius: 52px;
+    background: linear-gradient(120deg, rgba(99,102,241,.24), rgba(139,92,246,.13) 52%, rgba(255,255,255,.05));
+    border: 2px solid rgba(255,255,255,.14);
+  }
+  .qr {
+    flex: 0 0 auto; width: 356px; height: 356px; border-radius: 34px; background: #fff;
+    padding: 20px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 22px 50px rgba(0,0,0,.35);
+  }
+  .qr img { width: 100%; height: 100%; display: block; }
+  .foot-main { flex: 1; }
+  .foot-h { font-size: 62px; font-weight: 900; letter-spacing: .01em; }
+  .foot-h span { color: #a9a6ff; }
+  .foot-url { margin-top: 20px; font-size: 44px; color: #dfe2ff; letter-spacing: .01em; }
+  .foot-steps { margin-top: 26px; display: flex; gap: 20px; }
+  .step { font-size: 30px; color: #c2c8e6; padding: 14px 26px; border-radius: 999px;
+    border: 2px solid rgba(255,255,255,.16); background: rgba(255,255,255,.05); }
+  .foot-side { flex: 0 0 auto; text-align: right; }
+  .foot-side .big { font-size: 40px; font-weight: 800; color: #fff; }
+  .foot-side .small { margin-top: 14px; font-size: 28px; color: #9aa2c4; line-height: 1.6; }
+  .badge-free { display: inline-block; margin-top: 22px; font-size: 28px; font-weight: 700; color: #0b0e18;
+    background: linear-gradient(100deg, #cdd0ff, #a5b4fc); padding: 14px 30px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="glow-line"></div>
+
+  <!-- 页眉 -->
+  <div class="head">
+    <div class="brand">
+      <div class="mark"><b>CET</b><i>4 · 6</i></div>
+      <div class="brand-txt">
+        <div class="name">四六级英语工作台</div>
+        <div class="sub">零依赖 · 离线可用 · 装进桌面就能背</div>
+      </div>
+    </div>
+    <div class="head-tags">
+      <div class="tag hot">2026 备考季</div>
+      <div class="tag">PWA 免安装</div>
+    </div>
+  </div>
+
+  <!-- 主标题 -->
+  <div class="hero">
+    <div class="kicker"><span class="dot"></span>CET-4 / CET-6 · 从背单词到写作批改</div>
+    <h1>四六级，<br /><em>一个页面</em>全做完。</h1>
+    <div class="lede">
+      <b>4491 个词条</b>按 SM-2 自动排复习 · <b>真题与错题本</b>隔天复练 · <b>34 篇写作素材</b>随取随背 ·
+      <b>逐句精听 + 听写对照</b> · 还有一个会读你数据、会改计划、会出题的 <s>AI 助教</s>。
+    </div>
+  </div>
+
+  <!-- 手机三连 -->
+  <div class="phones">
+    <div class="phone-wrap left">
+      <div class="phone"><div class="screen"><img src="shots/words.png" alt="单词卡" /></div></div>
+    </div>
+    <div class="phone-wrap mid">
+      <div class="phone"><div class="screen"><img src="shots/today.png" alt="今日任务" /></div></div>
+    </div>
+    <div class="phone-wrap right">
+      <div class="phone"><div class="screen"><img src="shots/agent.png" alt="AI 助教" /></div></div>
+    </div>
+  </div>
+
+  <div class="caps">
+    <div class="cap"><span class="pin"></span><b>单词卡</b>会翻面 · 会朗读</div>
+    <div class="cap"><span class="pin"></span><b>今日任务</b>一屏决定今天干什么</div>
+    <div class="cap"><span class="pin"></span><b>AI 助教</b>说话就能改设置</div>
+  </div>
+
+  <!-- 功能卡 -->
+  <div class="feats">
+    <div class="feat">
+      <div class="feat-ico">01</div>
+      <div>
+        <div class="feat-t">间隔重复，不是死记硬背</div>
+        <div class="feat-d">SM-2 调度：答错的词明天再见，记牢的词几周后再聊，<u>每个词都有自己的节奏</u>。</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico">02</div>
+      <div>
+        <div class="feat-t">真题精练 + 错题本</div>
+        <div class="feat-d">选词填空、段落匹配、阅读精读，做错一键进错题本，<u>隔天原题复练</u>。</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico">03</div>
+      <div>
+        <div class="feat-t">写作素材库</div>
+        <div class="feat-d">34 篇模板 / 万能句型 / 高级替换 / 翻译句式，收藏、自建、<u>AI 批改</u>一条龙。</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico">04</div>
+      <div>
+        <div class="feat-t">听力精听</div>
+        <div class="feat-d">逐句播放、0.6×–1.25× 变速、听写对照，<u>词级对齐算准确率</u>，漏听标红。</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico">05</div>
+      <div>
+        <div class="feat-t">AI 助教真的会动手</div>
+        <div class="feat-d">10 个工具直连你的数据：查进度、记生词、改计划、出题、存素材，<u>一句话就生效</u>。</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico">06</div>
+      <div>
+        <div class="feat-t">装到桌面，离线也能刷</div>
+        <div class="feat-d">Service Worker 全量缓存，地铁里照常用；<u>数据只存在本机</u>，不上传、不注册。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数字带 -->
+  <div class="stats">
+    <div class="stat"><div class="v num">4491</div><div class="k">词条</div></div>
+    <div class="stat"><div class="v num">1293</div><div class="k">六级词</div></div>
+    <div class="stat"><div class="v num">67</div><div class="k">高频短语</div></div>
+    <div class="stat"><div class="v num">34</div><div class="k">写作范文</div></div>
+    <div class="stat"><div class="v num">10</div><div class="k">AI 工具</div></div>
+    <div class="stat"><div class="v num">0</div><div class="k">第三方依赖</div></div>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="foot">
+    <div class="qr"><img src="qr.png" alt="二维码" /></div>
+    <div class="foot-main">
+      <div class="foot-h">扫码即用，<span>不用注册</span>。</div>
+      <div class="foot-url">liqishuo-123.github.io/English-study</div>
+      <div class="foot-steps">
+        <div class="step">① 手机浏览器打开</div>
+        <div class="step">② 添加到主屏幕</div>
+        <div class="step">③ 从桌面启动</div>
+      </div>
+    </div>
+    <div class="foot-side">
+      <div class="big">免费 · 开源</div>
+      <div class="small">移动优先设计<br />安卓 / iOS / 桌面通用</div>
+      <div class="badge-free">每天 10 分钟，考前不慌</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
