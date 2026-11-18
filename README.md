@@ -2,6 +2,8 @@
 
 > 移动优先、零依赖、离线可用的大学英语四六级备考工具。
 
+**在线试用**：<https://liqishuo-123.github.io/English-study/>（GitHub Pages，支持「添加到主屏幕」）
+
 本仓库是一个纯原生 HTML + CSS + JavaScript 的单页应用，不依赖任何 npm 包、构建工具或外部 CDN。电脑上直接双击 `index.html` 即可打开；部署到任意免费静态托管后，手机可「添加到主屏幕」像原生 App 一样离线使用。
 
 ## 功能速览
