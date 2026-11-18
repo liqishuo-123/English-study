@@ -221,6 +221,22 @@ try {
     res.forEach(([name, ok, detail]) => check(name, ok, detail));
   }
 
+  // 深色主题下再跑一遍
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await ev(`
+    App.Store.setSetting('theme', 'dark');
+    if (App.applyTheme) App.applyTheme('dark');
+    else document.documentElement.setAttribute('data-theme', 'dark');
+    App.Router.go('#/today');
+    return 1;
+  `);
+  await sleep(300);
+  await ev(`App.Router.go('#/coach'); return 1;`);
+  await sleep(800);
+  console.log('\n--- 深色主题 390 ---');
+  (await ev(AUDIT)).forEach(([name, ok, detail]) => check('深色：' + name, ok, detail));
+  await ev(`App.Store.setSetting('theme', 'light'); if (App.applyTheme) App.applyTheme('light'); return 1;`);
+
   // 对话面板：打开后检查可点尺寸与溢出
   await ev(`
     App.Store.commit((s) => { s.settings.ai = { baseUrl: 'https://x.test', apiKey: 'sk-x', model: 'm' }; });
