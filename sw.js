@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    sw.js — Service Worker（离线缓存策略）
    设计目标：
    1. 仅在有 http(s) 部署时生效；file:// 下注册会自动静默失败。
@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  var CACHE_VERSION = 'v1';
+  var CACHE_VERSION = 'v4';
   var CACHE_NAME = 'cet-workbench-' + CACHE_VERSION;
 
   // 预缓存清单（与 index.html 中 script/link 顺序保持一致）
@@ -25,13 +25,26 @@
     './js/core/picker.js',
     './js/core/importer.js',
     './js/core/ai.js',
+    './js/core/tts.js',
     './js/core/nav.js',
     './js/core/router.js',
     './js/core/wordsdb.js',
+    './js/core/agent.js',
     './js/data/cet4-words-1.js',
     './js/data/cet4-words-2.js',
     './js/data/cet4-words-3.js',
+    './js/data/cet4-words-4.js',
+    './js/data/cet4-words-5.js',
+    './js/data/cet4-words-6.js',
+    './js/data/cet4-words-7.js',
+    './js/data/cet4-words-8.js',
+    './js/data/cet4-words-9.js',
+    './js/data/cet4-words-10.js',
+    './js/data/cet4-words-11.js',
+    './js/data/cet4-words-12.js',
     './js/data/cet6-words-1.js',
+    './js/data/cet6-words-2.js',
+    './js/data/cet6-words-3.js',
     './js/data/phrases.js',
     './js/data/quiz-select-fill.js',
     './js/data/quiz-matching.js',
@@ -43,6 +56,7 @@
     './js/views/wrongbook.js',
     './js/views/writing.js',
     './js/views/listen.js',
+    './js/views/agent.js',
     './js/views/me.js',
     './js/app.js',
     './icons/favicon.svg',
@@ -103,6 +117,28 @@
         }).catch(function () {
           return caches.match(req).then(function (cached) {
             return cached || caches.match('./index.html');
+          });
+        })
+      );
+      return;
+    }
+
+    // 脚本与样式：Stale-While-Revalidate
+    // 先返回缓存（秒开、断网可用），同时后台拉新版本写回缓存，
+    // 这样即使忘了改 CACHE_VERSION，下一次打开也能拿到新代码。
+    if (/\.(?:js|css)$/.test(url.pathname)) {
+      event.respondWith(
+        caches.open(CACHE_NAME).then(function (cache) {
+          return cache.match(req).then(function (cached) {
+            var network = fetch(req).then(function (res) {
+              if (res && res.status === 200 && res.type === 'basic') {
+                cache.put(req, res.clone());
+              }
+              return res;
+            }).catch(function () {
+              return cached || new Response('', { status: 503, statusText: 'Service Unavailable' });
+            });
+            return cached || network;
           });
         })
       );
