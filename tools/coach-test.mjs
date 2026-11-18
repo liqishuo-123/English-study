@@ -337,6 +337,7 @@ try {
   /* ---------- 6.5 教练对话面板 ---------- */
   await ev(`
     App.Store.commit((s) => { s.settings.ai = { baseUrl: 'https://api.example.com', apiKey: 'sk-test', model: 'test-model' }; });
+    window.__savedEnabled = App.AI.isEnabled;
     App.AI.isEnabled = () => true;
     App.Router.go('#/coach');
     return 1;
@@ -383,6 +384,7 @@ try {
     document.querySelector('.coach-chat-send').click();
     await new Promise((r) => setTimeout(r, 1800));
     App.AI.chat = savedChat;
+    if (window.__savedEnabled) { App.AI.isEnabled = window.__savedEnabled; delete window.__savedEnabled; }
     const chat = document.querySelector('.coach-chat');
     const me = chat.querySelectorAll('.coach-msg.is-me').length;
     const bots = chat.querySelectorAll('.coach-msg:not(.is-me)').length;
@@ -454,6 +456,147 @@ try {
   check('宽屏复盘卡限制在 780 内', wide.repW > 0 && wide.repW <= 782, wide.repW + 'px');
   check('宽屏无横向溢出', wide.overflowX <= 1, 'overflow=' + wide.overflowX + 'px');
   await send('Emulation.clearDeviceMetricsOverride');
+
+  /* ---------- 9.5 每日首次打开的复盘提醒 ---------- */
+  const nudgeSetup = await ev(`
+    App.Utils.closeSheet();
+    App.Store.commit((s) => {
+      s.coachReports = [];
+      s.settings.ai = { baseUrl: '', apiKey: '', model: '' };
+      s.settings.coach.noticeAt = '';
+      s.settings.coach.auto = true;
+      s.settings.coach.every = 3;
+    });
+    App.Coach.savePlan({
+      title: '测试计划', summary: '测提醒', horizonDays: 30,
+      phases: [{ name: '打底', days: 30, focus: '背词' }],
+      targets: { dailyNewWords: 30, dailyQuiz: 1, dailyWriting: 1, dailyListen: 1, dailyMinutes: 60 },
+      rules: [], todayFocus: '先复习'
+    }, { apply: false });
+    App.Store.commit((s) => { s.studyPlan.startDate = App.Utils.addDays(App.Utils.today(), -4); });
+    App.Store.flush();
+    App.Router.go('#/today');
+    await new Promise((r) => setTimeout(r, 400));
+    return { notice: App.Coach.notice(), day: (App.Coach.planProgress() || {}).day };
+  `);
+  check('该复盘时 notice() 给出提醒', !!nudgeSetup.notice && nudgeSetup.notice.never === true,
+    nudgeSetup.notice ? '计划第 ' + nudgeSetup.day + ' 天、从未复盘' : 'null');
+
+  const nudgeUi = await ev(`
+    const r = App.CoachNudge();
+    const sheet = document.querySelector('#sheet-root .sheet');
+    return {
+      shown: !!r,
+      title: sheet ? (sheet.querySelector('.sheet-title') || {}).textContent : '',
+      hasDue: sheet ? !!sheet.querySelector('.coach-due') : false,
+      rules: sheet ? sheet.querySelectorAll('.coach-rule').length : 0,
+      btns: sheet ? Array.from(sheet.querySelectorAll('.sheet-foot button')).map((b) => b.textContent.trim()) : []
+    };
+  `);
+  check('浮层能弹出来', nudgeUi.shown && nudgeUi.hasDue, '标题「' + nudgeUi.title + '」');
+  check('浮层说明会看什么', nudgeUi.rules === 3, nudgeUi.rules + ' 条');
+  check('浮层有「今天先不」和生成按钮',
+    nudgeUi.btns.length === 2 && /先不/.test(nudgeUi.btns.join('|')), nudgeUi.btns.join(' / '));
+
+  const dismissed = await ev(`
+    const btns = Array.from(document.querySelectorAll('#sheet-root .sheet-foot button'));
+    btns[0].click();
+    await new Promise((r) => setTimeout(r, 400));
+    return {
+      sheetGone: !document.querySelector('#sheet-root .sheet.is-open'),
+      again: App.Coach.notice(),
+      noticeAt: App.Store.state.settings.coach.noticeAt,
+      today: App.Utils.today()
+    };
+  `);
+  check('点「今天先不」后浮层关闭', dismissed.sheetGone);
+  check('当天不再重复提醒', dismissed.again === null && dismissed.noticeAt === dismissed.today, dismissed.noticeAt);
+
+  const generated = await ev(`
+    App.Store.commit((s) => { s.settings.coach.noticeAt = ''; });
+    App.Store.flush();
+    App.Router.go('#/today');
+    await new Promise((r) => setTimeout(r, 400));
+    App.CoachNudge();
+    const btns = Array.from(document.querySelectorAll('#sheet-root .sheet-foot button'));
+    btns[btns.length - 1].click();
+    await new Promise((r) => setTimeout(r, 900));
+    return {
+      reports: App.Coach.reports().length,
+      headline: App.Coach.reports()[0] ? App.Coach.reports()[0].headline : '',
+      route: location.hash,
+      again: App.Coach.notice(),
+      sheetOpen: !!document.querySelector('#sheet-root .sheet.is-open')
+    };
+  `);
+  check('从浮层一键生成复盘', generated.reports === 1 && !!generated.headline, generated.headline);
+  check('生成后跳到学习教练页', generated.route === '#/coach', generated.route);
+  check('生成后不再提醒', generated.again === null);
+  check('生成完浮层自动收起', generated.sheetOpen === false);
+
+  const offSwitch = await ev(`
+    App.Store.commit((s) => {
+      s.coachReports = []; s.settings.coach.noticeAt = ''; s.settings.coach.auto = false;
+      s.studyPlan.startDate = App.Utils.addDays(App.Utils.today(), -9);
+    });
+    return App.Coach.notice();
+  `);
+  check('关掉提醒后就不再弹', offSwitch === null);
+
+  const noPlan = await ev(`
+    App.Store.commit((s) => { s.settings.coach.auto = true; s.settings.coach.noticeAt = ''; s.studyPlan = null; });
+    return App.Coach.notice();
+  `);
+  check('没有计划时不打扰', noPlan === null);
+
+  const firstDay = await ev(`
+    App.Coach.savePlan({
+      title: '刚建的计划', summary: 'x', horizonDays: 30,
+      phases: [{ name: '打底', days: 30, focus: '背词' }],
+      targets: { dailyNewWords: 30, dailyQuiz: 1, dailyWriting: 1, dailyListen: 1, dailyMinutes: 60 },
+      rules: [], todayFocus: '先复习'
+    }, { apply: false });
+    App.Store.commit((s) => { s.coachReports = []; s.settings.coach.noticeAt = ''; });
+    return { notice: App.Coach.notice(), day: (App.Coach.planProgress() || {}).day };
+  `);
+  check('刚建计划的头一天不催', firstDay.notice === null, '第 ' + firstDay.day + ' 天');
+
+  /* ---------- 9.8 冷启动自动提醒（真的走 app.js 的启动流程） ---------- */
+  await ev(`
+    App.Store.commit((s) => {
+      s.coachReports = [];
+      s.settings.coach.noticeAt = '';
+      s.settings.coach.auto = true;
+      s.settings.coach.every = 3;
+      s.settings.ai = { baseUrl: '', apiKey: '', model: '' };
+    });
+    App.Coach.savePlan({
+      title: '冷启动测试计划', summary: 'x', horizonDays: 40,
+      phases: [{ name: '打底', days: 40, focus: '背词' }],
+      targets: { dailyNewWords: 30, dailyQuiz: 1, dailyWriting: 1, dailyListen: 1, dailyMinutes: 60 },
+      rules: [], todayFocus: '先复习'
+    }, { apply: false });
+    App.Store.commit((s) => { s.studyPlan.startDate = App.Utils.addDays(App.Utils.today(), -6); });
+    App.Store.flush();
+    location.hash = '#/today';
+    return 1;
+  `);
+  await sleep(300);
+  await send('Page.reload', { ignoreCache: true });
+  await sleep(4600);
+  const autoNudge = await ev(`
+    const sheet = document.querySelector('#sheet-root .sheet');
+    return {
+      open: !!sheet && sheet.classList.contains('is-open'),
+      title: sheet ? (sheet.querySelector('.sheet-title') || {}).textContent || '' : '',
+      noticeAt: App.Store.state.settings.coach.noticeAt,
+      today: App.Utils.today()
+    };
+  `);
+  check('打开应用后自动弹复盘提醒', autoNudge.open && autoNudge.title === '该复盘了', autoNudge.title);
+  check('冷启动也记下今天已提醒', autoNudge.noticeAt === autoNudge.today, autoNudge.noticeAt);
+  await ev(`App.Utils.closeSheet(); return 1;`);
+  await sleep(400);
 
   /* ---------- 10. 异常 ---------- */
   const realErrors = errors.filter((e) => !/favicon|ResizeObserver/.test(e));

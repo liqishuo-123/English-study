@@ -272,6 +272,50 @@ try {
   await ev(`App.Utils.closeSheet(); return 1;`);
   await sleep(300);
 
+  // 复盘提醒浮层的版式
+  const nudgeAudit = await ev(`
+    App.Store.commit((s) => {
+      s.coachReports = [];
+      s.settings.coach.noticeAt = '';
+      s.settings.coach.auto = true;
+      s.settings.coach.every = 3;
+      s.settings.ai = { baseUrl: '', apiKey: '', model: '' };
+    });
+    if (!App.Coach.plan()) {
+      App.Coach.savePlan({
+        title: '提醒测试', summary: 'x', horizonDays: 30,
+        phases: [{ name: '打底', days: 30, focus: '背词' }],
+        targets: { dailyNewWords: 30, dailyQuiz: 1, dailyWriting: 1, dailyListen: 1, dailyMinutes: 60 },
+        rules: [], todayFocus: '先复习'
+      }, { apply: false });
+    }
+    App.Store.commit((s) => { s.studyPlan.startDate = App.Utils.addDays(App.Utils.today(), -5); });
+    App.CoachNudge();
+    await new Promise((r) => setTimeout(r, 350));
+    const sheet = document.querySelector('#sheet-root .sheet');
+    const foot = sheet ? sheet.querySelector('.sheet-foot') : null;
+    const btns = foot ? Array.from(foot.querySelectorAll('button')) : [];
+    const vw = document.documentElement.clientWidth;
+    return [
+      ['提醒浮层能弹出', !!sheet && sheet.classList.contains('is-open')],
+      ['浮层宽度不超视口', sheet ? sheet.getBoundingClientRect().width <= vw + 1 : false,
+        sheet ? Math.round(sheet.getBoundingClientRect().width) + '/' + vw : ''],
+      ['浮层按钮高度达标', btns.length > 0 && btns.every((b) => b.getBoundingClientRect().height >= 40),
+        btns.map((b) => Math.round(b.getBoundingClientRect().height)).join(',')],
+      ['浮层按钮不重叠', btns.length === 2 && btns[0].getBoundingClientRect().right <= btns[1].getBoundingClientRect().left + 1],
+      ['正文能滚到底、最后一行不被遮', (() => {
+        const b = sheet.querySelector('.sheet-body');
+        b.scrollTop = b.scrollHeight;
+        const last = b.lastElementChild;
+        return last ? last.getBoundingClientRect().bottom <= b.getBoundingClientRect().bottom + 1 : false;
+      })()]
+    ];
+  `);
+  console.log('\n--- 复盘提醒浮层 ---');
+  nudgeAudit.forEach(([name, ok, detail]) => check(name, ok, detail));
+  await ev(`App.Utils.closeSheet(); return 1;`);
+  await sleep(300);
+
   // 今日页入口卡单独检查
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await ev(`App.Router.go('#/coach'); return 1;`);

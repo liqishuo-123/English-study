@@ -514,6 +514,49 @@
   }
 
   /* =========================================================
+     四之二、每天首次打开时的「该复盘了」提醒
+     只算「该不该提醒」，不碰网络；同一天只提醒一次
+     ========================================================= */
+
+  /** 今天第一次打开时要不要提醒复盘；不需要则返回 null */
+  function notice() {
+    var st = App.Store.state;
+    var c = st.settings.coach || {};
+    var today = U.today();
+
+    if (c.auto === false) return null;
+    if (c.noticeAt === today) return null;      // 今天已经提醒过（点过「先不」也算）
+    var p = plan();
+    if (!p) return null;                         // 还没计划，先别打扰
+
+    var due = dueReport();
+    if (!due.due) return null;
+
+    var prog = planProgress() || { day: 0 };
+    // 刚制定计划的头一天不催：此时什么都还没发生，复盘没有素材
+    if (due.never && prog.day <= 1) return null;
+
+    return {
+      never: !!due.never,
+      days: due.days,
+      every: due.every,
+      planDay: prog.day,
+      total: p.horizonDays,
+      phase: prog.phase ? prog.phase.name : '',
+      ai: aiReady()
+    };
+  }
+
+  /** 记下「今天提醒过了」，避免一天里反复弹 */
+  function markNotice() {
+    App.Store.commit(function (s) {
+      if (!s.settings.coach || typeof s.settings.coach !== 'object') s.settings.coach = {};
+      s.settings.coach.noticeAt = U.today();
+    });
+    App.Store.flush();
+  }
+
+  /* =========================================================
      五、喂给模型的材料（也是本地降级的依据）
      ========================================================= */
   function dataBlock(days) {
@@ -886,6 +929,8 @@
     planProgress: planProgress,
     currentPhase: currentPhase,
     dueReport: dueReport,
+    notice: notice,
+    markNotice: markNotice,
     // 计划
     plan: plan,
     planBrief: planBrief,

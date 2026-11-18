@@ -865,4 +865,104 @@
 
   App.Views = App.Views || {};
   App.Views.coach = function () { return view(); };
+
+  /* =========================================================
+     每天第一次打开时：到复盘时间就提醒一句
+     只出提示、不自动请求接口（避免偷偷花额度）
+     ========================================================= */
+  App.CoachNudge = function nudge() {
+    if (!App.Coach || !App.Coach.notice) return null;
+    var info = App.Coach.notice();
+    if (!info) return null;
+    // 已经有浮层开着（向导、确认框等）就先不打扰
+    if (document.querySelector('#sheet-root .sheet')) return null;
+
+    App.Coach.markNotice();
+
+    var days = info.never ? 0 : (info.days || 0);
+    var titleText = info.never ? '计划已经走了 ' + info.planDay + ' 天，还没复盘过' : '距上次复盘 ' + days + ' 天，该看一看了';
+    var subText = info.never
+      ? '花一分钟看看：这几天完成了多少、卡在哪种题上、哪些词一直记不住。'
+      : '看看这几天的进度、易错题型和最记不住的词，顺便调一下目标。';
+
+    var closed = false;
+    var sheet = null;
+
+    var foot = [
+      U.el('button.btn.btn-ghost', {
+        type: 'button',
+        onclick: function () { U.closeSheet(); }
+      }, ['今天先不']),
+      U.el('button.btn.btn-primary', {
+        type: 'button',
+        onclick: function () { run(false); }
+      }, [U.icon(info.ai ? 'sparkle' : 'chart'), info.ai ? '用 AI 复盘' : '生成数据版复盘'])
+    ];
+
+    if (info.ai) {
+      foot.splice(1, 0, U.el('button.btn.btn-ghost', {
+        type: 'button',
+        onclick: function () { run(true); }
+      }, ['不用 AI']));
+    }
+
+    var bodyText = U.el('div.coach-due-sub', { style: { margin: '0 0 12px' }, text: subText });
+    var list = U.el('div.coach-rules', null, [
+      U.el('div.coach-rule', null, [U.icon('check'), '进度：这 ' + Math.max(1, info.planDay) + ' 天的目标达成率']),
+      U.el('div.coach-rule', null, [U.icon('check'), '易错点：错得最多的题型和原因']),
+      U.el('div.coach-rule', null, [U.icon('check'), '易错词：遗忘最多的词 + 记忆方法'])
+    ]);
+
+    var body = U.el('div', null, [
+      U.el('div.coach-due', null, [
+        U.icon('chart'),
+        U.el('div.coach-due-main', null, [
+          U.el('div.coach-due-title', { text: titleText }),
+          U.el('div.coach-due-sub', {
+            text: '第 ' + Math.max(1, info.planDay) + '/' + info.total + ' 天' +
+              (info.phase ? ' · ' + info.phase : '')
+          })
+        ])
+      ]),
+      bodyText,
+      list,
+      U.el('div.tip-line', { text: '只在你点的时候才调用接口，生成的复盘会存进教练页的时间线。' })
+    ]);
+
+    sheet = U.openSheet({
+      title: '该复盘了', body: body, foot: foot,
+      onClose: function () { closed = true; }
+    });
+
+    function run(localOnly) {
+      if (closed) return;
+      var box = body.querySelector('.coach-due');
+      bodyText.textContent = '正在翻你最近的记录…';
+      if (box) box.classList.add('is-busy');
+
+      var done = function (ok, err) {
+        if (ok) {
+          U.toast('复盘已生成', 'ok');
+          if (App.Router.currentRoute() === '#/coach') App.Router.reload();
+          else App.Router.go('#/coach');
+          setTimeout(function () { U.closeSheet(); }, 260);
+        } else {
+          U.toast(err || '生成失败', 'err');
+          bodyText.textContent = '这次没成：' + (err || '未知错误') + '。想重试就再点一次，或者去教练页用本地版本。';
+        }
+      };
+
+      if (localOnly || !info.ai) {
+        var rep = App.Coach.makeLocalReport(info.never ? 7 : Math.max(info.every || 7, 3));
+        done(!!rep, '');
+        return;
+      }
+
+      App.Coach.generateReport({ days: info.never ? 7 : Math.max(info.every || 7, 3) }).then(function (r) {
+        done(r && r.ok, r && r.error);
+      });
+    }
+
+    return { close: sheet, info: info };
+  };
 })(window);

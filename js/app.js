@@ -92,6 +92,14 @@
     // 7. 首屏
     var root = U.$('#view');
     if (root) App.Router.start(root);
+
+    // 8. 每天第一次打开：到复盘时间就提醒一句（只提示，点了才请求接口）
+    if (App.CoachNudge) {
+      setTimeout(function () {
+        try { App.CoachNudge(); }
+        catch (e) { console.warn('[Coach] 提醒出错', e); }
+      }, 1400);
+    }
   }
 
   // 等待 DOM 就绪（脚本在 body 末尾，此处仅为保险）

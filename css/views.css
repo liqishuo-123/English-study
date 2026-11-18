@@ -1711,6 +1711,14 @@ button.coach-mini .icon { color: var(--text-3); flex: none; }
 .coach-due-main { flex: 1; min-width: 0; }
 .coach-due-title { font-size: 13.5px; font-weight: 650; color: var(--text); margin-bottom: 3px; }
 .coach-due-sub { font-size: 12px; color: var(--text-3); line-height: 1.5; }
+.coach-due .icon {
+  flex: none;
+  width: 18px; height: 18px;
+  stroke: var(--brand-2); fill: none;
+  stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+}
+.coach-due.is-busy { opacity: .72; }
+.coach-due.is-busy .icon { animation: agSpin 1.1s linear infinite; }
 
 .coach-reps { display: flex; flex-direction: column; gap: var(--sp-3); }
 .coach-rep {

@@ -56,7 +56,8 @@
           daysPerWeek: 6,          // 每周能学几天
           weak: [],                // 自认薄弱模块：单词 / 阅读 / 写作 / 听力
           auto: true,              // 是否到点提醒复盘
-          every: 3                 // 每几天复盘一次
+          every: 3,                // 每几天复盘一次
+          noticeAt: ''             // 上次弹「该复盘了」的日期，一天只弹一次
         }
       },
       progress: {},      // wordId -> { srs, status, mastered, masteredAt, starred, lastSeenAt }
