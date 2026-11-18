@@ -50,7 +50,14 @@
         ai: { baseUrl: '', apiKey: '', model: '' },
         ttsVoice: '',              // 听力朗读使用的语音（空 = 自动挑一个）
         ttsRate: 0.9,              // 听力默认语速
-        quizType: 'reading'
+        quizType: 'reading',
+        coach: {                   // 学习教练的档案（计划里会用）
+          targetScore: 500,        // 目标分数（710 分制）
+          daysPerWeek: 6,          // 每周能学几天
+          weak: [],                // 自认薄弱模块：单词 / 阅读 / 写作 / 听力
+          auto: true,              // 是否到点提醒复盘
+          every: 3                 // 每几天复盘一次
+        }
       },
       progress: {},      // wordId -> { srs, status, mastered, masteredAt, starred, lastSeenAt }
       customWords: [],   // 用户导入的词
@@ -59,6 +66,8 @@
       materials: [],     // 自建写作素材
       listenTasks: [],   // 听力任务
       agentMessages: [], // AI 助教对话记录（只存对话，不存密钥）
+      studyPlan: null,   // 学习教练制定的分阶段计划
+      coachReports: [],  // 学习教练的复盘记录（最新的在前）
       logs: {},          // 'YYYY-MM-DD' -> { date, minutes, wordsNew, wordsReviewed, quizDone, quizCorrect, planDone, checked }
       mastery: {},       // 'YYYY-MM-DD' -> 累计掌握词数（用于掌握率曲线）
       streak: { best: 0 }
@@ -124,9 +133,10 @@
     ['progress', 'logs', 'mastery'].forEach(function (k) {
       if (raw[k] && typeof raw[k] === 'object') out[k] = raw[k];
     });
-    ['customWords', 'customQuestions', 'wrongbook', 'materials', 'listenTasks', 'agentMessages'].forEach(function (k) {
+    ['customWords', 'customQuestions', 'wrongbook', 'materials', 'listenTasks', 'agentMessages', 'coachReports'].forEach(function (k) {
       if (Array.isArray(raw[k])) out[k] = raw[k];
     });
+    if (raw.studyPlan && typeof raw.studyPlan === 'object' && !Array.isArray(raw.studyPlan)) out.studyPlan = raw.studyPlan;
     if (raw.streak && typeof raw.streak === 'object') out.streak.best = raw.streak.best || 0;
 
     // 补齐 progress 中缺失的子字段（如后期新增 mastered / freq 相关标记）

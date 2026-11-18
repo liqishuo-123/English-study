@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    sw.js — Service Worker（离线缓存策略）
    设计目标：
    1. 仅在有 http(s) 部署时生效；file:// 下注册会自动静默失败。
@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  var CACHE_VERSION = 'v4';
+  var CACHE_VERSION = 'v5';
   var CACHE_NAME = 'cet-workbench-' + CACHE_VERSION;
 
   // 预缓存清单（与 index.html 中 script/link 顺序保持一致）
@@ -30,6 +30,7 @@
     './js/core/router.js',
     './js/core/wordsdb.js',
     './js/core/agent.js',
+    './js/core/coach.js',
     './js/data/cet4-words-1.js',
     './js/data/cet4-words-2.js',
     './js/data/cet4-words-3.js',
@@ -57,6 +58,7 @@
     './js/views/writing.js',
     './js/views/listen.js',
     './js/views/agent.js',
+    './js/views/coach.js',
     './js/views/me.js',
     './js/app.js',
     './icons/favicon.svg',

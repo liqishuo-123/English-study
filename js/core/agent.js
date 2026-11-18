@@ -357,8 +357,103 @@
       }
     },
 
+    get_stats: {
+      desc: '查询真实学习数据：近 N 天的出勤、新学/复习词量、阅读正确率、目标达成率，加上最记不住的词和错题分布。写复盘、改计划、判断该不该加量之前必须先调它，不要凭印象说数字。',
+      params: { days: { type: 'integer', description: '统计最近多少天，默认 14，范围 3~90' } },
+      run: function (a) {
+        if (!App.Coach) return { ok: false, summary: '学习教练模块未加载' };
+        var st = App.Coach.stats(a.days);
+        var weak = App.Coach.weakWords(8);
+        var tags = App.Coach.errorTags(5);
+        var p = App.Coach.planBrief();
+        return {
+          ok: true,
+          summary: '近 ' + st.days + ' 天学习 ' + st.sum.activeDays + ' 天、新学 ' + st.sum.newWords +
+            ' 词、正确率 ' + st.accuracy + '%、新词目标达成率 ' + st.goalHitRate + '%',
+          data: {
+            range: { days: st.days, from: st.from, to: st.to },
+            profile: st.profile,
+            words: st.words,
+            sum: st.sum,
+            accuracy: st.accuracy,
+            avgNewWords: st.avgNewWords,
+            goalHitRate: st.goalHitRate,
+            streak: st.streak,
+            daily: st.daily,
+            weakWords: weak.map(function (w) {
+              return { word: w.word, meaning: w.meaning, lapses: w.lapses, reps: w.reps, due: w.due };
+            }),
+            errorTags: tags,
+            plan: p
+          }
+        };
+      }
+    },
+
+    get_plan: {
+      desc: '读取学习教练当前的分阶段计划（阶段、每日目标、执行规则、今天该做什么）。用户问「我的计划是什么 / 今天该干什么」时用它。',
+      params: {},
+      run: function () {
+        if (!App.Coach) return { ok: false, summary: '学习教练模块未加载' };
+        var p = App.Coach.plan();
+        if (!p) return { ok: true, summary: '还没有学习计划，可以让教练制定一份（学习教练页或本对话的 save_plan）', data: null };
+        var pr = App.Coach.planProgress();
+        return {
+          ok: true,
+          summary: '「' + p.title + '」第 ' + (pr ? pr.day : 1) + '/' + p.horizonDays + ' 天，当前阶段「' +
+            (pr && pr.phase ? pr.phase.name : '—') + '」',
+          data: p
+        };
+      }
+    },
+
+    save_plan: {
+      desc: '保存一张分阶段学习计划到「学习教练」页，并可同时写入每日目标。json 结构：{"title":"标题","summary":"一句话策略","horizonDays":剩余天数,"phases":[{"name":"阶段名","days":天数,"focus":"这一阶段做什么"}],"targets":{"dailyNewWords":40,"dailyQuiz":1,"dailyWriting":1,"dailyListen":1,"dailyMinutes":70},"weekly":["第1周：…"],"rules":["执行规则"],"todayFocus":"今天先做什么"}。阶段天数之和应等于 horizonDays。',
+      params: {
+        json: { type: 'string', description: '计划 JSON 字符串' },
+        apply: { type: 'boolean', description: '是否同时把 targets 写进每日目标，默认 true' }
+      },
+      run: function (a) {
+        if (!App.Coach) return { ok: false, summary: '学习教练模块未加载' };
+        var obj = App.Coach.extractJSON(a.json);
+        if (!obj || (!obj.phases && !obj.targets)) {
+          return { ok: false, summary: '不是合法的计划 JSON，请检查字段（title / phases / targets 至少要有 phases 或 targets）' };
+        }
+        var p = App.Coach.savePlan(obj, { source: 'ai', apply: a.apply !== false });
+        return {
+          ok: true,
+          summary: '已保存计划「' + p.title + '」：' + p.phases.length + ' 个阶段 / ' + p.horizonDays +
+            ' 天' + (p.applied ? '，每日目标已同步更新' : ''),
+          data: { title: p.title, targets: p.targets, phases: p.phases }
+        };
+      }
+    },
+
+    save_report: {
+      desc: '把一份复盘结论存进「学习教练」页的时间线（用户之后能回看）。json 结构：{"headline":"一句话结论","score":0~100,"highlights":["做得好"],"problems":[{"title":"问题","evidence":"数据证据","fix":"怎么改"}],"weakWords":[{"word":"abandon","meaning":"词义","why":"为什么记不住","tip":"记忆方法"}],"nextActions":["明天做什么"],"adjust":{"dailyNewWords":30}}。',
+      params: {
+        json: { type: 'string', description: '复盘 JSON 字符串' },
+        days: { type: 'integer', description: '这份复盘覆盖最近多少天，默认 7' }
+      },
+      run: function (a) {
+        if (!App.Coach) return { ok: false, summary: '学习教练模块未加载' };
+        var obj = App.Coach.extractJSON(a.json);
+        if (!obj || (!obj.headline && !obj.problems)) {
+          return { ok: false, summary: '不是合法的复盘 JSON，至少要 headline 或 problems' };
+        }
+        var days = U.clamp(parseInt(a.days, 10) || 7, 3, 90);
+        var rep = App.Coach.addReport(obj, { source: 'ai', range: { days: days } });
+        return {
+          ok: true,
+          summary: '已存入复盘时间线：「' + rep.headline + '」（' + rep.problems.length + ' 个问题 / ' +
+            rep.weakWords.length + ' 个易错词）',
+          data: rep
+        };
+      }
+    },
+
     navigate: {
-      desc: '让界面跳转到某个页面，用户能立刻看到结果。route 取值：#/today 今日、#/words 单词、#/writing 写作、#/quiz 阅读、#/wrongbook 错题本、#/listen 听力、#/me 我的。',
+      desc: '让界面跳转到某个页面，用户能立刻看到结果。route 取值：#/today 今日、#/words 单词、#/writing 写作、#/quiz 阅读、#/wrongbook 错题本、#/listen 听力、#/coach 学习教练、#/agent 助教、#/me 我的。',
       params: { route: { type: 'string', description: '路由，如 #/words' } },
       run: function (a) {
         var route = String(a.route || '').trim();
@@ -393,6 +488,8 @@
       if (name === 'save_material') required = ['title', 'content'];
       if (name === 'add_quiz') required = ['json'];
       if (name === 'set_word_state') required = ['word'];
+      if (name === 'save_plan') required = ['json'];
+      if (name === 'save_report') required = ['json'];
       if (name === 'navigate') required = ['route'];
       return {
         type: 'function',
@@ -414,6 +511,7 @@
       '',
       '## 你能做的事',
       '你不只会聊天，还能调用工具直接操作这个应用里的真实数据：查看进度、列单词、查词、加生词、改每日目标、录入 AI 出的题、保存写作素材、跳转页面。',
+      '另外你还是「学习教练」的对话入口：可以用 get_stats 拿真实数据写复盘、用 save_plan 落一张分阶段计划、用 save_report 把复盘存进时间线。',
       '凡涉及用户自己的数据（进度、待复习、生词、目标、错题、素材），必须先调用工具拿真实数据，严禁凭印象编造数字。',
       '',
       '## 回答风格',
@@ -428,6 +526,13 @@
       '2. 目标要小步可完成（例如一次 10 个词），不要一次布置 100 个。',
       '3. 用户想练题时，用 add_quiz 生成一篇（或一套）贴合四六级难度的原创题，题干 4 个选项、答案唯一，并在 explanation 里写清为什么。生成后提示用户去「阅读」页作答。',
       '4. 用户说「帮我记住这些词」时，用 add_words 存进生词本，而不是只在聊天里解释。',
+      '',
+      '## 学习教练：制定计划与定期复盘',
+      '1. 用户要「制定学习计划 / 定个计划 / 我该怎么安排」时：先 get_stats 看真实水平，再 save_plan 落库。计划必须分阶段、数字要落地（宁可少也不要完不成），阶段天数之和 = 剩余天数。',
+      '2. 用户要「复盘 / 看看我最近怎么样 / 哪里在退步」时：先 get_stats（默认 14 天）拿数据，再用 save_report 保存。',
+      '3. 复盘必须带证据：引用具体数字（如「近 14 天只学了 6 天」「阅读 12 题对 7 题」），不许写「继续努力」这类废话。',
+      '4. 易错词要落到具体词上：从 weakWords 里挑，给可执行的记忆方法（词根、谐音、搭配场景）。',
+      '5. 结论里如果建议调整每日目标，就顺手 update_plan 改掉，或写进复盘的 adjust 字段。',
       '',
       '## 工具调用规则',
       '1. 一次可以调用多个工具，但只在确实需要数据时才调。',

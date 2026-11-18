@@ -27,6 +27,7 @@ const ROUTES = [
   ['writing', '#/writing'],
   ['wrongbook', '#/wrongbook'],
   ['listen', '#/listen'],
+  ['coach', '#/coach'],
   ['agent', '#/agent'],
   ['me', '#/me']
 ];

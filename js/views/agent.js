@@ -25,14 +25,19 @@
     add_quiz: '录入练习题',
     save_material: '保存写作素材',
     search_material: '搜索素材库',
+    get_stats: '统计近期数据',
+    get_plan: '读取学习计划',
+    save_plan: '保存学习计划',
+    save_report: '保存复盘',
     navigate: '跳转页面'
   };
 
   var QUICK = [
     { icon: 'target', text: '帮我看看现在的进度，今天该学什么？' },
+    { icon: 'compass', text: '按我的真实数据定一份学习计划，直接存进去' },
+    { icon: 'chart', text: '复盘一下最近两周：进度、易错点、易错词' },
     { icon: 'cards', text: '抽查我 5 个到期单词，逐个考我' },
-    { icon: 'read', text: '按四级难度给我出一篇仔细阅读' },
-    { icon: 'pen', text: '给我 3 组作文高级替换表达并存入素材库' }
+    { icon: 'read', text: '按四级难度给我出一篇仔细阅读' }
   ];
 
   var MAX_KEEP = 80;   // 本地最多保留多少条消息

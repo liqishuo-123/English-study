@@ -1391,3 +1391,647 @@
   margin: 6px 0 14px;
 }
 .mat-card.is-active { border-color: var(--brand-2); }
+
+/* =========================================================
+   第 8 节 · 学习教练（#/coach）
+   今日页的教练入口卡 + 计划卡 + 复盘时间线 + 数据概览
+   ========================================================= */
+
+/* ---------- 今日页入口卡 ---------- */
+.coach-mini {
+  display: block;
+  padding: var(--sp-4);
+}
+button.coach-mini {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm, none);
+}
+button.coach-mini:active { transform: scale(.995); }
+button.coach-mini.is-empty { border-style: dashed; }
+button.coach-mini .icon { color: var(--text-3); flex: none; }
+.coach-mini-lead {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: var(--grad-brand-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coach-mini-lead .icon {
+  width: 21px;
+  height: 21px;
+  color: var(--brand-2);
+  stroke: var(--brand-2);
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.coach-mini-main { flex: 1; min-width: 0; display: block; }
+.coach-mini-title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.coach-mini-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.55;
+}
+.coach-mini-body {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.coach-mini-phase {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.coach-mini-bar {
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+.coach-mini-bar-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--grad-brand);
+  transition: width .45s ease;
+}
+.coach-mini-foot {
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.coach-mini-due {
+  margin-top: var(--sp-3);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+}
+.coach-mini-due .icon { width: 15px; height: 15px; flex: none; }
+.coach-mini-due span { flex: 1; }
+
+/* ---------- AI 未配置提示 ---------- */
+.coach-ai-hint {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--warn-soft);
+  border: 1px solid rgba(245, 158, 11, .28);
+}
+.coach-ai-hint .icon { width: 17px; height: 17px; color: var(--warn); flex: none; margin-top: 2px; }
+.coach-ai-hint-title { font-size: 13px; font-weight: 650; color: var(--text); margin-bottom: 3px; }
+.coach-ai-hint-sub { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+
+/* ---------- 空态 ---------- */
+.coach-empty {
+  text-align: center;
+  padding: var(--sp-6) var(--sp-4);
+}
+.coach-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--sp-3);
+  border-radius: var(--r-lg);
+  background: var(--grad-brand-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coach-empty-icon .icon {
+  width: 27px; height: 27px;
+  stroke: var(--brand-2); fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.coach-empty-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.coach-empty-desc {
+  font-size: 13px; color: var(--text-3); line-height: 1.7;
+  max-width: 340px; margin: 0 auto var(--sp-4);
+}
+.coach-empty-actions { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 340px; margin: 0 auto; }
+
+/* ---------- 运行中 ---------- */
+.coach-run {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.coach-run-icon {
+  flex: none;
+  width: 34px; height: 34px;
+  border-radius: var(--r-full);
+  background: var(--grad-brand-soft);
+  display: flex; align-items: center; justify-content: center;
+}
+.coach-run-icon .icon {
+  width: 18px; height: 18px;
+  stroke: var(--brand-2); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  animation: agSpin 1s linear infinite;
+}
+.coach-run-text { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.coach-run-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; line-height: 1.55; }
+
+/* ---------- 错误卡 ---------- */
+.coach-error {
+  padding: 12px 14px;
+  margin-bottom: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, .26);
+}
+.coach-error-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 650; color: var(--danger); margin-bottom: 4px;
+}
+.coach-error-title .icon { width: 15px; height: 15px; }
+.coach-error-text { font-size: 12.5px; color: var(--text-2); line-height: 1.6; word-break: break-word; }
+
+/* ---------- 计划卡 ---------- */
+.coach-plan { position: relative; overflow: hidden; }
+.coach-plan-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.coach-plan-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  letter-spacing: -.2px; flex: 1; min-width: 0;
+}
+.coach-plan-sum { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+/* 阶段条：横向按天数占比分配宽度，一眼看出走到了哪一段 */
+.coach-phases {
+  display: flex;
+  gap: 6px;
+  margin: var(--sp-3) 0;
+}
+.coach-phase {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  color: var(--text-2);
+  overflow: hidden;
+}
+.coach-phase.is-now {
+  background: var(--grad-brand);
+  color: var(--text-on-brand);
+  box-shadow: 0 6px 16px -8px rgba(79, 70, 229, .8);
+}
+.coach-phase.is-past { opacity: .48; }
+.coach-phase-name {
+  font-weight: 620;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coach-phase-days {
+  font-size: 11px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.coach-phase.is-now .coach-phase-days { color: rgba(255, 255, 255, .78); }
+
+.coach-focus {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  padding: 11px 12px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  margin-bottom: var(--sp-3);
+}
+.coach-focus-tag {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-2);
+  background: var(--surface);
+  border-radius: var(--r-full);
+  padding: 2px 8px;
+  margin-top: 1px;
+}
+.coach-focus-text { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+.coach-goals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: var(--sp-3);
+}
+.coach-goal {
+  padding: 6px 11px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.coach-rules { display: flex; flex-direction: column; gap: 7px; margin-bottom: var(--sp-3); }
+.coach-rule {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.coach-rule > .icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  color: var(--brand-2);
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.coach-actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-2); }
+
+/* ---------- 复盘区 ---------- */
+.coach-due {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--grad-brand-soft);
+  border: 1px solid rgba(99, 102, 241, .22);
+  margin-bottom: var(--sp-3);
+}
+.coach-due-main { flex: 1; min-width: 0; }
+.coach-due-title { font-size: 13.5px; font-weight: 650; color: var(--text); margin-bottom: 3px; }
+.coach-due-sub { font-size: 12px; color: var(--text-3); line-height: 1.5; }
+
+.coach-reps { display: flex; flex-direction: column; gap: var(--sp-3); }
+.coach-rep {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.coach-rep-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-4);
+  cursor: pointer;
+}
+.coach-score {
+  flex: none;
+  width: 46px; height: 46px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.coach-score.is-good { background: var(--ok-soft); color: var(--ok); }
+.coach-score.is-low { background: var(--danger-soft); color: var(--danger); }
+.coach-rep-main { flex: 1; min-width: 0; }
+.coach-rep-headline {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.coach-rep-meta { font-size: 11.5px; color: var(--text-3); }
+.coach-rep-head > .icon { flex: none; color: var(--text-3); }
+.coach-rep-body { display: none; padding: 0 var(--sp-4) var(--sp-4); }
+.coach-rep.is-open .coach-rep-body { display: block; }
+
+.coach-sec + .coach-sec { margin-top: var(--sp-3); }
+.coach-sec-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: .4px;
+  margin-bottom: 7px;
+}
+.coach-sec-body { display: flex; flex-direction: column; gap: 7px; }
+
+.coach-li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 9px 11px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+}
+.coach-li-num {
+  flex: none;
+  width: 18px; height: 18px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.coach-li-main { flex: 1; min-width: 0; }
+.coach-li-title { font-size: 13px; font-weight: 620; color: var(--text); line-height: 1.5; }
+.coach-li-sub { font-size: 12px; color: var(--text-3); line-height: 1.6; margin-top: 3px; }
+.coach-li-fix { font-size: 12px; color: var(--brand-2); line-height: 1.6; margin-top: 4px; }
+.coach-li.is-good { background: var(--ok-soft); }
+.coach-li.is-good .coach-li-title { color: var(--ok); }
+.coach-li.is-bad { background: var(--danger-soft); }
+.coach-li > .icon {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  color: var(--text-3);
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.coach-li.is-good > .icon { color: var(--ok); }
+.coach-li.is-bad > .icon { color: var(--danger); }
+
+.coach-weaks { display: flex; flex-direction: column; gap: 8px; }
+.coach-w-item {
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+}
+.coach-w-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.coach-w-word { font-size: 14px; font-weight: 700; color: var(--text); }
+.coach-w-mean { font-size: 12px; color: var(--text-3); }
+.coach-w-why { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+.coach-w-tip { font-size: 12.5px; color: var(--brand-2); line-height: 1.6; margin-top: 4px; }
+
+.coach-adjust {
+  margin-top: var(--sp-3);
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--grad-brand-soft);
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+.coach-rep-foot {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+/* 复盘的底栏按钮是文字链，扩大可点面积到 34px 以上 */
+.coach-rep-foot .link-btn,
+.coach-ai-hint .link-btn,
+.coach-page .card-title .link-btn,
+.coach-adjust .link-btn {
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+}
+.coach-ai-hint .link-btn { background: var(--surface); }
+.coach-page .card-title .link-btn { margin: -4px 0 -4px 0; }
+.coach-adjust .link-btn { margin-left: 6px; background: var(--surface); }
+.coach-rep.is-open .coach-rep-head { padding-bottom: var(--sp-3); }
+
+.coach-none {
+  text-align: center;
+  padding: var(--sp-5) var(--sp-4);
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.7;
+}
+
+/* ---------- 数据概览 ---------- */
+.coach-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 76px;
+  padding: var(--sp-2) 0;
+}
+.coach-bar {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.coach-bar-fill {
+  display: block;
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: var(--grad-brand);
+  opacity: .85;
+}
+.coach-stat {
+  font-size: 11.5px;
+  color: var(--text-3);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coach-weak-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: var(--sp-2);
+}
+.coach-w-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.coach-w-chip:active { transform: scale(.96); }
+.coach-w-chip-word { font-weight: 650; color: var(--text); }
+.coach-w-chip-num {
+  font-size: 11px;
+  color: var(--danger);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 教练对话面板（底部浮层） ---------- */
+.sheet .coach-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 46dvh;
+  max-height: 64dvh;
+}
+.sheet .coach-chat-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px 0 8px;
+}
+.sheet .coach-msg { display: flex; }
+.sheet .coach-msg.is-me { justify-content: flex-end; }
+.coach-msg-body {
+  max-width: 84%;
+  padding: 10px 13px;
+  border-radius: 14px 14px 14px 5px;
+  background: var(--surface-sunken);
+  font-size: 13.5px;
+  line-height: 1.68;
+  color: var(--text);
+  word-break: break-word;
+}
+.coach-msg.is-me .coach-msg-body {
+  background: var(--grad-brand);
+  color: var(--text-on-brand);
+  border-radius: 14px 14px 5px 14px;
+}
+.coach-msg-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.coach-tool {
+  font-size: 11px;
+  color: var(--ok);
+  background: var(--ok-soft);
+  border-radius: var(--r-full);
+  padding: 3px 8px;
+  line-height: 1.4;
+}
+.coach-tool.is-fail { color: var(--danger); background: var(--danger-soft); }
+
+.coach-chat-run {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+.coach-chat-run .icon {
+  width: 14px; height: 14px;
+  stroke: var(--brand-2); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  animation: agSpin 1s linear infinite;
+}
+.coach-chat-seeds { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 2px; }
+.coach-chat-seeds .chip { min-height: 32px; padding: 6px 11px; }
+
+.coach-chat-foot {
+  flex: none;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.coach-chat-input {
+  flex: 1;
+  min-height: 42px;
+  max-height: 96px;
+  resize: none;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-sunken);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+.coach-chat-input:focus { outline: none; border-color: var(--brand-2); }
+.coach-chat-send {
+  flex: none;
+  width: 42px; height: 42px;
+  border-radius: var(--r-full);
+  background: var(--grad-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coach-chat-send .icon {
+  width: 18px; height: 18px;
+  stroke: #fff; fill: none;
+  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
+.coach-chat-send.is-busy { opacity: .6; }
+
+@media (min-width: 900px) {
+  .coach-plan, .coach-rep, .coach-bars { max-width: 780px; }
+  .coach-empty-desc, .coach-empty-actions { max-width: 380px; }
+}

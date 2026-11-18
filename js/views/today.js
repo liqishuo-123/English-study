@@ -163,6 +163,9 @@
       ])
     ]);
 
+    /* ---------- 学习教练入口卡 ---------- */
+    var coachMini = buildCoachMini();
+
     /* ---------- 任务清单 ---------- */
     var taskCard = U.el('section.card', null, [
       U.el('div.card-title', null, [U.icon('target'), '今日任务', U.el('span.spacer'),
@@ -237,6 +240,7 @@
 
     root.appendChild(hero);
     root.appendChild(ring);
+    if (coachMini) root.appendChild(coachMini);
     root.appendChild(taskCard);
     root.appendChild(cta);
     root.appendChild(grid);
@@ -247,8 +251,73 @@
     if (App.NAV) App.NAV.setDot('words', due > 0);
   }
 
-  function modCell(iconName, label, route, badge) {
-    return U.el('button.mod-cell', {
+  /* =========================================================
+     学习教练入口卡
+     - 有计划：显示当前阶段 + 今天该做什么 + 计划进度，到了复盘日直接亮提示
+     - 没计划：一句话引导（有 AI 用 AI，没有就用本地模板）
+     ========================================================= */
+  function buildCoachMini() {
+    if (!App.Coach || typeof App.Coach.plan !== 'function') return null;
+    var p = App.Coach.plan();
+    var due = App.Coach.dueReport();
+
+    if (!p) {
+      return U.el('button.card.coach-mini.is-empty', {
+        type: 'button',
+        onclick: function () { App.Router.go('#/coach'); }
+      }, [
+        U.el('span.coach-mini-lead', null, [U.icon('compass')]),
+        U.el('span.coach-mini-main', null, [
+          U.el('span.coach-mini-title', { text: '还没有学习计划' }),
+          U.el('span.coach-mini-sub', {
+            text: App.Coach.aiReady()
+              ? '让教练按考试日期和你的真实水平排一份分阶段计划'
+              : '可先让本地模板生成一份，配好 AI 之后再细化'
+          })
+        ]),
+        U.icon('right')
+      ]);
+    }
+
+    var pr = App.Coach.planProgress();
+    var ph = pr && pr.phase;
+    var focus = p.todayFocus || (ph && ph.focus) || p.summary || '';
+
+    return U.el('section.card.coach-mini', null, [
+      U.el('div.card-title', null, [
+        U.icon('compass'), '学习教练',
+        U.el('span.spacer'),
+        U.el('span.badge.badge-brand', { text: '第 ' + (pr ? pr.day : 1) + '/' + p.horizonDays + ' 天' })
+      ]),
+      U.el('button.coach-mini-body', {
+        type: 'button',
+        onclick: function () { App.Router.go('#/coach'); }
+      }, [
+        U.el('div.coach-mini-phase', {
+          text: (ph ? (ph.done ? '收尾阶段' : ph.name) : '计划进行中') + '：' + focus
+        }),
+        U.el('div.coach-mini-bar', null, [
+          U.el('div.coach-mini-bar-fill', { style: { width: (pr ? pr.rate : 0) + '%' } })
+        ]),
+        U.el('div.coach-mini-foot', {
+          text: '计划走了 ' + (pr ? pr.rate : 0) + '% · 新词目标达成 ' + (pr ? pr.hit : 0) +
+            '/' + (pr ? pr.elapsed : 0) + ' 天'
+        })
+      ]),
+      due.due ? U.el('button.coach-mini-due', {
+        type: 'button',
+        onclick: function () { App.Router.go('#/coach'); }
+      }, [
+        U.icon('fire'),
+        U.el('span', {
+          text: due.never ? '还没复盘过，花一分钟看看数据' : '距离上次复盘 ' + due.days + ' 天，该看看了'
+        }),
+        U.icon('right')
+      ]) : null
+    ]);
+  }
+
+  function modCell(iconName, label, route, badge) {    return U.el('button.mod-cell', {
       type: 'button',
       onclick: function () { App.Router.go(route); }
     }, [

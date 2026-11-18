@@ -141,6 +141,45 @@ const SEED = `(async () => {
     { id: 'a3', role: 'user', text: '再给我挑 5 个容易混的词，配例句。', at: now - 90000 }
   ];
 
+  // 学习教练：一份进行中的计划 + 一条 AI 复盘
+  App.Coach.savePlan({
+    title: '六级 96 天冲刺',
+    summary: '先把高频词滚熟，中期主攻听力精听与仔细阅读，最后两周只做真题和错题。',
+    horizonDays: 96,
+    phases: [
+      { name: '词汇打底', days: 34, focus: '每天 40 新词 + 清到期复习，阅读每天 1 篇' },
+      { name: '听力强化', days: 40, focus: '每天精听 1 段并听写出错句，每周 3 篇真题' },
+      { name: '真题冲刺', days: 22, focus: '隔天整套真题，错题当天回看，写作背 6 个开头' }
+    ],
+    targets: { dailyNewWords: 40, dailyQuiz: 3, dailyWriting: 1, dailyListen: 2, dailyMinutes: 30 },
+    weekly: ['第 1 周：把 360 个 CET-4 高频词过完第一轮', '第 2 周：开始听力精听，每天 1 段'],
+    rules: ['复习永远优先于新词', '错题当天回看一遍，不拖到第二天', '听力只在早上做，晚上只背词'],
+    todayFocus: '先清掉 96 个到期复习词，再背 40 个新词，晚上精听一段校园新闻'
+  }, { source: 'ai', apply: true });
+
+  App.Coach.addReport({
+    headline: '词汇推进稳，听力被挤掉了',
+    score: 74,
+    highlights: [
+      '连续打卡 15 天，出勤 100%',
+      '近 7 天新词完成率 92%，比上周多 11 个/天'
+    ],
+    problems: [
+      { title: '精听只做了 1 天', evidence: '近 7 天 listenDone 只有 1 次，目标是 14 次', fix: '固定在早饭时做一段，做完立刻听写' },
+      { title: '阅读正确率卡在 62%', evidence: '12 题对 7 题，错题全在推断题', fix: '每篇做完单独标出处推断句，再对答案' }
+    ],
+    weakWords: [
+      { word: 'reluctant', meaning: 'adj. 不情愿的', why: '和 reluctant/reluctance 词性混，拼写常漏 t', tip: 're + luct（挣扎）+ ant：心里挣扎着不想去' },
+      { word: 'conservative', meaning: 'adj. 保守的', why: '和 conversation 混，靠首字母记不住', tip: 'con-serv（保存）+ ative：什么都想保着 = 保守' },
+      { word: 'abandon', meaning: 'v. 放弃；抛弃', why: '和 abundant 混，拼写只差一个字母', tip: 'a-band-on：把乐队丢在路边 = 抛弃' }
+    ],
+    nextActions: [
+      '今晚先精听一段，听写完再把错句抄一遍',
+      '明天做 1 篇仔细阅读，只练推断题'
+    ],
+    adjust: { dailyListen: 2, dailyNewWords: 40 }
+  }, { source: 'ai', range: { days: 7 } });
+
   S.commit(() => {});
   S.flush();
   return { words: App.Words.counts() };
@@ -148,6 +187,7 @@ const SEED = `(async () => {
 
 const SHOTS = [
   ['today', '#/today', 1400],
+  ['coach', '#/coach', 1500],
   ['words', '#/words', 1200],
   ['agent', '#/agent', 1400],
   ['listen', '#/listen', 1200],

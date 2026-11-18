@@ -40,6 +40,7 @@
       '#/wrongbook': App.Views.wrongbook,
       '#/writing': App.Views.writing,
       '#/listen': App.Views.listen,
+      '#/coach': App.Views.coach,
       '#/agent': App.Views.agent,
       '#/me': App.Views.me
     };

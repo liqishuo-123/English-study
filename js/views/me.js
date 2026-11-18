@@ -501,7 +501,8 @@
     wrap.appendChild(U.el('div.set-group', null, [
       setRow('target', '考试', U.escapeHtml(st.examName || '大学英语四级') + ' · ' + st.examDate, function () { pickExam(); }),
       setRow('chart', '每日目标', planSummary(), function () { App.openPlanEditor(); }),
-      setRow('book', '词书偏好', '当前练习：' + wordBookLabel(st.wordBook), function () { pickWordBook(); })
+      setRow('book', '词书偏好', '当前练习：' + wordBookLabel(st.wordBook), function () { pickWordBook(); }),
+      setRow('compass', '学习教练', coachSummary(), function () { App.Router.go('#/coach'); })
     ]));
 
     // 主题与 AI
@@ -605,6 +606,21 @@
     if (ls > 0) parts.push('精听 ' + ls + ' 段');
     if (!parts.length) return '今天没设任务目标 · 点击去填';
     return parts.join(' · ') + ' · 点击修改';
+  }
+
+  /** 学习教练概要 */
+  function coachSummary() {
+    if (!App.Coach) return '按数据定计划 · 定期复盘';
+    var p = App.Coach.plan();
+    if (!p) {
+      return (App.Coach.aiReady() ? '让 AI 按考试日期排计划' : '还没配 AI，可先用本地模板') + ' · 点击进入';
+    }
+    var pr = App.Coach.planProgress();
+    var due = App.Coach.dueReport();
+    var parts = ['第 ' + (pr ? pr.day : 1) + '/' + p.horizonDays + ' 天'];
+    if (pr && pr.phase) parts.push('「' + pr.phase.name + '」');
+    parts.push(due.due ? (due.never ? '还没复盘过' : '该复盘了') : '计划中');
+    return parts.join(' · ') + ' · 点击进入';
   }
 
   /** 朗读设置概要 */
